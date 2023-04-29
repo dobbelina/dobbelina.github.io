@@ -5,7 +5,7 @@ or inaccuracies in the addons or their content.
 Use of the addons and their content is at your own risk.   
 The site owners are not liable for any damages or losses that may arise from the use of the addons or their content.  
 
-To download the custom site you want click  it and:   
+To download the custom site you want, click  it and:   
 ![bild](https://user-images.githubusercontent.com/46063764/235278198-95f9d642-70aa-4e6d-bc0d-4ee0aa0e06ad.png)
 
 **How to install:**  
