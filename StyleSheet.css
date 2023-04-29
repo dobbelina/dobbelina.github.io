@@ -1,0 +1,48 @@
+.fill:hover,
+.fill:focus {
+  box-shadow: inset 0 0 0 2em var(--hover);
+}
+
+.fill {
+  --color: #a972cb;
+  --hover: #F40FAD;
+}
+
+a.button {
+  color: var(--color);
+  transition: 0.25s;
+  background: none;
+  border: 2px solid;
+  font: inherit;
+  line-height: 1;
+  margin: 0.5em;
+  padding: 0.5em 1em; /* Adjusted padding values */
+  text-decoration: none; /* Remove underline from link */
+}
+
+a.button:hover, a.button:focus {
+  border-color: var(--hover);
+  color: #fff;
+}
+
+
+    .box {
+      background-color: white;
+      border: 1px solid black;
+      padding: 10px;
+      margin-top: 30px;
+      text-align: center;
+      width: 30%;
+      float: left;
+	  border-radius: 10%;
+    }
+	img {
+      width: 256px;
+      height: 256px;
+      vertical-align: middle;
+      margin-top: 10px;
+      display: block;
+      margin-left: 350px; /* Adjust the margin-left value as desired */
+	  border: 20px solid black;
+	  border-radius: 10%;
+    }
