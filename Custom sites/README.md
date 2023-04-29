@@ -20,6 +20,6 @@ You'll get another warning. Click yes if you want to proceed.
 A select site to enable window will open up, click on the installed site,   
 you're going to get another warning, click yes if you want to continue.   
 If you click yes, you'll get a site enabled notification. That's it.   
-Go into Cumination, sites & the site should be in there.  
+Go into Cumination & the site should be in there.  
 
 
