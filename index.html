@@ -1,28 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>repository.dobbelina</title>
-  <link rel="icon" type="image/x-icon" href="icon.ico">
-  <link href="StyleSheet.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StyleSheet.css">
+	<link rel="icon" type="image/x-icon" href="icon.ico">
+    <title>Repository Dobbelina</title>
+    
+    <script>
+    function openWebsite() {
+        window.open("https://github.com/dobbelina/repository.dobbelina", "_blank");
+    }
+		</script>
+
 </head>
-<body style="background-color: rgb(244, 15, 173);">
-  <h1>repository.dobbelina</h1>
-  <div class="container">
-    <div class="box">
-      <p style="margin-bottom: 15px;">
-        Please note that the content provided by the custom addons is created by third-party developers and not by the site owners. The site owners do not endorse any of the addons or their content, and are not responsible for any errors, omissions, or inaccuracies in the addons or their content. Use of the addons and their content is at your own risk. The site owners are not liable for any damages or losses that may arise from the use of the addons or their content.
-      </p>
-      <a class="fill button" href="https://github.com/dobbelina/dobbelina.github.io/tree/master/Custom%20sites" target="_blank" style="position: relative; top: -3px;">Visit Custom Add-ons</a>
+<body>
+    <header>
+        <h1>repository.dobbelina</h1>
+    </header>
+    <div class="container">
+      <section class="featured-image">
+          <img src="https://user-images.githubusercontent.com/46063764/103461711-a9eb6280-4d20-11eb-983b-516b022cbbf5.png" alt="Featured Image" onclick="openWebsite()">
+      </section>
+
+      <main>
+          <section class="download">
+              <a href="repository.dobbelina-1.0.4.zip">repository.dobbelina-1.0.4.zip</a>
+          </section>
+          <section class="info">
+              <h2>Adding this repository to Kodi</h2>
+              <p>First you need to enable in Kodi to allow installing 3rd-party add-ons.<br>You can <a href="https://howtomediacenter.com/en/allow-unofficial-kodi-addons/" target="_blank" rel="noreferrer noopener">visit this page</a> for instructions.</p>
+              <p>You can now download the zip from the button above. Or follow these instructions to add this page to the Filemanager.</p>
+           
+              <h3>Instructions:</h3>
+              <ol>
+                  <li>Go to the Filemanager in Kodi</li>
+                  <li>Click on Add Source</li>
+                  <li>In Add file source window, click on &lt;None&gt; in the left.</li>
+                  <li>It opens a new window, where you typ this url: <b>https://dobbelina.github.io/</b></li>
+                  <li>Click on OK, under 'Enter a name for this media source', typ for example: <b>repository.dobbelina</b></li>
+                  <li>Click on OK to close the window. You are now done. To test if it works, go to the just added source in Filemanager, you should see the zipfile</li>
+                  <li>Now you can go to Addons, and install from Zip. You see the just added source there.</li>
+              </ol>
+          </section>
+
+          <section class="subfolder">
+              <h2>Custom sites folder</h2>
+              <p>Please note that the content provided by the custom addons is created by third-party developers and not by the site owners. The site owners do not endorse any of the addons or their content, and are not responsible for any errors, omissions, or inaccuracies in the addons or their content. Use of the addons and their content is at your own risk. The site owners are not liable for any damages or losses that may arise from the use of the addons or their content.</p>
+              <a href="https://github.com/dobbelina/dobbelina.github.io/tree/master/Custom%20sites" target="_blank" class="button">Visit Subfolder</a>
+          </section>
+      </main>
     </div>
-    <div class="image">
-      <img src="logo.png" usemap="#image-map">
-      <map name="image-map">
-        <area target="_blank" alt="Cumination Home" title="Cumination Home" href="https://github.com/dobbelina/repository.dobbelina" coords="1,0,509,509" shape="rect">
-      </map>
-    </div>
-  </div>
-  <br>
-  <br>
-  <a href="repository.dobbelina-1.0.4.zip">repository.dobbelina-1.0.4.zip</a>
 </body>
 </html>
