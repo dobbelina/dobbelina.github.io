@@ -25,24 +25,30 @@ a.button:hover, a.button:focus {
   color: #fff;
 }
 
+.container {
+  display: flex; /* Add this property to the container */
+}
 
-    .box {
-      background-color: white;
-      border: 1px solid black;
-      padding: 10px;
-      margin-top: 30px;
-      text-align: center;
-      width: 30%;
-      float: left;
-	  border-radius: 10%;
-    }
-	img {
-      width: 256px;
-      height: 256px;
-      vertical-align: middle;
-      margin-top: 10px;
-      display: block;
-      margin-left: 350px; /* Adjust the margin-left value as desired */
-	  border: 20px solid black;
-	  border-radius: 10%;
-    }
+.box {
+  background-color: white;
+  border: 1px solid black;
+  padding: 10px;
+  margin-top: 30px;
+  text-align: center;
+  width: 30%;
+  border-radius: 10%;
+}
+
+.image {
+  margin-left: 50px; /* Adjust the margin-left value as desired */
+}
+
+img {
+  width: 256px;
+  height: 256px;
+  vertical-align: middle;
+  margin-top: 30px;
+  display: block;
+  border: 20px solid black;
+  border-radius: 10%;
+}
