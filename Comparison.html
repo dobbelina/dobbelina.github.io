@@ -85,13 +85,18 @@
         .marker-added { background-color: var(--added-bg); }
         .marker-removed { background-color: var(--removed-bg); }
 
-        /* Toggle Switch Styles */
+        /* Control Panel Styles */
         .controls {
-            display: flex;
+            display: inline-flex;
             justify-content: center;
             align-items: center;
             gap: 12px;
             margin-top: 20px;
+            background: var(--dropzone-bg);
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .switch {
@@ -148,11 +153,42 @@
             user-select: none;
         }
 
+        /* Prefix Controls Styles */
+        .prefix-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+            padding-left: 20px;
+            border-left: 1px solid var(--border-color);
+            transition: opacity 0.3s;
+        }
+
+        .prefix-controls.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .prefix-controls input[type="text"] {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .prefix-controls input[type="text"]:focus {
+            border-color: var(--dropzone-hover);
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+        }
+
         /* Dropzone Styles */
         .dropzones {
             display: flex;
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 24px;
             margin-bottom: 30px;
         }
 
@@ -279,13 +315,21 @@
             </div>
         </div>
 
-        <!-- Added Match line mode toggle -->
         <div class="controls">
+            <!-- Match Mode Toggle -->
             <label class="switch">
                 <input type="checkbox" id="match-mode-toggle" onchange="toggleMatchMode()">
                 <span class="slider"></span>
             </label>
             <span class="toggle-label" onclick="document.getElementById('match-mode-toggle').click()">Match line mode</span>
+
+            <!-- Prefix Constraints (Greyed out by default) -->
+            <div class="prefix-controls disabled" id="prefix-controls-container">
+                <input type="checkbox" id="prefix-checkbox" onchange="generateDiff()" disabled>
+                <label for="prefix-checkbox" class="toggle-label">Only lines that start with</label>
+                <!-- Changed placeholder to value so it has an actual default input -->
+                <input type="text" id="prefix-input" value="user_pref" oninput="generateDiff()" disabled>
+            </div>
         </div>
     </div>
 
@@ -365,8 +409,23 @@
         reader.readAsText(file);
     }
 
-    // Trigger re-diff when mode is toggled
+    // Toggle logic for Match Line Mode and the Prefix filter dependencies
     function toggleMatchMode() {
+        const isMatchMode = document.getElementById('match-mode-toggle').checked;
+        const prefixContainer = document.getElementById('prefix-controls-container');
+        const prefixCheckbox = document.getElementById('prefix-checkbox');
+        const prefixInput = document.getElementById('prefix-input');
+
+        if (isMatchMode) {
+            prefixContainer.classList.remove('disabled');
+            prefixCheckbox.disabled = false;
+            prefixInput.disabled = false;
+        } else {
+            prefixContainer.classList.add('disabled');
+            prefixCheckbox.disabled = true;
+            prefixInput.disabled = true;
+        }
+
         if (fileContents[1] !== null && fileContents[2] !== null) {
             generateDiff();
         }
@@ -380,6 +439,11 @@
 
         if (isMatchMode) {
             // MATCH LINE MODE LOGIC
+            const isPrefixCheck = document.getElementById('prefix-checkbox').checked;
+            const prefixVal = document.getElementById('prefix-input').value;
+            // Activate line constraint only if toggled ON and text is populated
+            const usePrefix = isPrefixCheck && prefixVal.length > 0;
+
             const lines1 = fileContents[1].split('\n');
             const lines2 = fileContents[2].split('\n');
             
@@ -394,16 +458,31 @@
                 const text1 = lines1[i];
                 const text2 = lines2[i];
                 
+                // Determine left cell
                 let cLeft = '';
                 if (text1 !== undefined) {
-                    if (!isBlank(text1) && set2.has(text1)) cLeft = 'added';
+                    let eligibleForMatch = !isBlank(text1);
+                    // Filter lines by prefix (trimStart is used to allow indented lines to match properly)
+                    if (usePrefix && eligibleForMatch) {
+                        eligibleForMatch = text1.trimStart().startsWith(prefixVal);
+                    }
+                    if (eligibleForMatch && set2.has(text1)) {
+                        cLeft = 'added';
+                    }
                 } else {
                     cLeft = 'empty';
                 }
 
+                // Determine right cell
                 let cRight = '';
                 if (text2 !== undefined) {
-                    if (!isBlank(text2) && set1.has(text2)) cRight = 'added';
+                    let eligibleForMatch = !isBlank(text2);
+                    if (usePrefix && eligibleForMatch) {
+                        eligibleForMatch = text2.trimStart().startsWith(prefixVal);
+                    }
+                    if (eligibleForMatch && set1.has(text2)) {
+                        cRight = 'added';
+                    }
                 } else {
                     cRight = 'empty';
                 }
