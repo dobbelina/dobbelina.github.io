@@ -138,7 +138,7 @@
         }
 
         input:checked + .slider {
-            background-color: #2da44e; /* GitHub success green */
+            background-color: #2da44e;
         }
 
         input:checked + .slider:before {
@@ -184,12 +184,13 @@
             box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
         }
 
-        /* Dropzone Styles */
+        /* Dropzones & Swap Container Styles */
         .dropzones {
             display: flex;
             gap: 20px;
             margin-top: 24px;
             margin-bottom: 30px;
+            align-items: center;
         }
 
         .dropzone {
@@ -226,6 +227,36 @@
             display: none;
         }
 
+        /* Swap Button Styles */
+        .swap-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .swap-button {
+            background-color: var(--dropzone-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+            color: var(--line-num-color);
+            outline: none;
+        }
+
+        .swap-button:hover {
+            border-color: var(--dropzone-hover);
+            color: var(--dropzone-hover);
+            background-color: #f3f8ff;
+            transform: scale(1.05);
+        }
+
         /* Diff Viewer Styles */
         .diff-container {
             display: none;
@@ -249,6 +280,9 @@
         .diff-header div {
             flex: 1;
             text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 0 10px;
         }
 
         .diff-scroll-area {
@@ -266,7 +300,6 @@
 
         td {
             padding: 2px 10px;
-            white-space: pre;
         }
 
         .line-num {
@@ -275,6 +308,7 @@
             text-align: right;
             user-select: none;
             background-color: var(--dropzone-bg);
+            white-space: nowrap;
         }
 
         .line-num.left { border-right: 1px solid var(--border-color); }
@@ -282,7 +316,8 @@
 
         .code {
             width: calc(50% - 40px);
-            overflow-wrap: normal;
+            white-space: pre;               /* Prevents line wrapping */
+            overflow: hidden;               /* Clips the text bounds */
         }
 
         /* Highlight Colors */
@@ -327,7 +362,6 @@
             <div class="prefix-controls disabled" id="prefix-controls-container">
                 <input type="checkbox" id="prefix-checkbox" onchange="generateDiff()" disabled>
                 <label for="prefix-checkbox" class="toggle-label">Only lines that start with</label>
-                <!-- Changed placeholder to value so it has an actual default input -->
                 <input type="text" id="prefix-input" value="user_pref" oninput="generateDiff()" disabled>
             </div>
         </div>
@@ -338,6 +372,17 @@
             <div class="icon">📄</div>
             <div class="filename" id="label1">Click or Drop Original JS File Here</div>
             <input type="file" id="file1" accept=".js,application/javascript,text/javascript">
+        </div>
+
+        <div class="swap-container">
+            <button class="swap-button" onclick="swapPanes()" title="Swap panes left to right">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 3 21 8 16 13"></polyline>
+                    <line x1="21" y1="8" x2="9" y2="8"></line>
+                    <polyline points="8 21 3 16 8 11"></polyline>
+                    <line x1="3" y1="16" x2="15" y2="16"></line>
+                </svg>
+            </button>
         </div>
 
         <div class="dropzone" id="drop2" onclick="document.getElementById('file2').click()">
@@ -364,8 +409,9 @@
 
 <script>
     let fileContents = { 1: null, 2: null };
+    let fileNames = { 1: null, 2: null }; // Keeps track of names independently for easy swapping
 
-    function setupDropzone(dropId, inputId, labelId, index) {
+    function setupDropzone(dropId, inputId, index) {
         const dropzone = document.getElementById(dropId);
         const input = document.getElementById(inputId);
 
@@ -396,8 +442,9 @@
 
     function handleFile(file, index) {
         if (!file) return;
-        document.getElementById(`label${index}`).textContent = file.name;
-        document.getElementById(`header-file${index}`).textContent = file.name;
+        
+        fileNames[index] = file.name;
+        updateLabels();
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -407,6 +454,45 @@
             }
         };
         reader.readAsText(file);
+    }
+
+    function updateLabels() {
+        document.getElementById('label1').textContent = fileNames[1] ? fileNames[1] : "Click or Drop Original JS File Here";
+        document.getElementById('header-file1').textContent = fileNames[1] ? fileNames[1] : "Original File";
+        
+        document.getElementById('label2').textContent = fileNames[2] ? fileNames[2] : "Click or Drop Modified JS File Here";
+        document.getElementById('header-file2').textContent = fileNames[2] ? fileNames[2] : "Modified File";
+    }
+
+    function swapPanes() {
+        // Swap actual strings mapped to each pane
+        const tempContent = fileContents[1];
+        fileContents[1] = fileContents[2];
+        fileContents[2] = tempContent;
+
+        const tempName = fileNames[1];
+        fileNames[1] = fileNames[2];
+        fileNames[2] = tempName;
+
+        // Optionally swap the inputs internal state if supported
+        try {
+            const input1 = document.getElementById('file1');
+            const input2 = document.getElementById('file2');
+            const tempFiles = input1.files;
+            input1.files = input2.files;
+            input2.files = tempFiles;
+        } catch(e) {}
+
+        // Redraw visual labels
+        updateLabels();
+
+        // Process diff behavior if both are valid, or hide if one is missing
+        if (fileContents[1] !== null && fileContents[2] !== null) {
+            generateDiff();
+        } else {
+            document.getElementById('diff-container').style.display = 'none';
+            document.getElementById('diff-body').innerHTML = '';
+        }
     }
 
     // Toggle logic for Match Line Mode and the Prefix filter dependencies
@@ -441,7 +527,6 @@
             // MATCH LINE MODE LOGIC
             const isPrefixCheck = document.getElementById('prefix-checkbox').checked;
             const prefixVal = document.getElementById('prefix-input').value;
-            // Activate line constraint only if toggled ON and text is populated
             const usePrefix = isPrefixCheck && prefixVal.length > 0;
 
             const lines1 = fileContents[1].split('\n');
@@ -451,18 +536,15 @@
             const set2 = new Set(lines2);
             const maxLines = Math.max(lines1.length, lines2.length);
 
-            // Helper to prevent highlighting empty/whitespace-only lines
             const isBlank = (str) => !str || str.trim() === '';
 
             for (let i = 0; i < maxLines; i++) {
                 const text1 = lines1[i];
                 const text2 = lines2[i];
                 
-                // Determine left cell
                 let cLeft = '';
                 if (text1 !== undefined) {
                     let eligibleForMatch = !isBlank(text1);
-                    // Filter lines by prefix (trimStart is used to allow indented lines to match properly)
                     if (usePrefix && eligibleForMatch) {
                         eligibleForMatch = text1.trimStart().startsWith(prefixVal);
                     }
@@ -473,7 +555,6 @@
                     cLeft = 'empty';
                 }
 
-                // Determine right cell
                 let cRight = '';
                 if (text2 !== undefined) {
                     let eligibleForMatch = !isBlank(text2);
@@ -543,15 +624,18 @@
         document.getElementById('diff-container').style.display = 'block';
     }
 
-    // Generalized helper to build custom rows with independent left/right cell stylings
     function addRow(tbody, leftClass, numLeft, textLeft, rightClass, numRight, textRight) {
         const tr = document.createElement('tr');
         
+        const cleanLeft = escapeHTML(textLeft);
+        const cleanRight = escapeHTML(textRight);
+
+        // Titles added to cells so hovered clipped text can be fully read!
         tr.innerHTML = `
             <td class="line-num left ${leftClass}">${numLeft !== null ? numLeft : ''}</td>
-            <td class="code ${leftClass}">${escapeHTML(textLeft)}</td>
+            <td class="code ${leftClass}" title="${cleanLeft}">${cleanLeft}</td>
             <td class="line-num right ${rightClass}">${numRight !== null ? numRight : ''}</td>
-            <td class="code ${rightClass}">${escapeHTML(textRight)}</td>
+            <td class="code ${rightClass}" title="${cleanRight}">${cleanRight}</td>
         `;
         
         tbody.appendChild(tr);
@@ -567,8 +651,8 @@
             .replace(/'/g, "&#039;");
     }
 
-    setupDropzone('drop1', 'file1', 'label1', 1);
-    setupDropzone('drop2', 'file2', 'label2', 2);
+    setupDropzone('drop1', 'file1', 1);
+    setupDropzone('drop2', 'file2', 2);
 
 </script>
 </body>
